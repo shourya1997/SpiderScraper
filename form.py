@@ -32,7 +32,7 @@ def formhandler():
         # entering list of urls in db
         insertDb(cursor, cnx, url_list)
         
-    closeDb(cnx)
+    closeDb(cursor, cnx)
     return template(FORM_TEMPLATE, message=message)
 
 

@@ -1,4 +1,4 @@
-import mysql.connector as mc
+import pymysql as mc
 import config
 
 USERNAME = config.USERNAME
@@ -22,25 +22,27 @@ def getDbConnection():
 
 def insertDb(cursor, cnx, url):    
     # insert into DB
-    # url = "'" + url + "'"  
-    # insert_db = 'INSERT INTO website(url) VALUES ({});'.format(url)
-    cursor = cnx.cursor(prepared=True)
-    insert_tuples = url
-    print(insert_tuples)
-    sql_insert_query = 'INSERT INTO website(url) VALUES (%s)'
+    insert_tuple = [(x,) for x in url] # converting list to tuples
+    sql_insert_query = "INSERT INTO website(url) VALUES (%s)"
  
     try:
-        cursor.executemany(sql_insert_query, insert_tuples)
+        cursor.executemany(sql_insert_query, insert_tuple)
         cnx.commit()
-        print(cursor.rowcount,"Insertion Successful")
+        print("Insertion Successful")
     except mc.Error as err:
         cnx.rollback()
         print("Something went wrong in inserting in DB: {}".format(err))
 
-def closeDb(cnx):
+def closeDb(cursor, cnx):
     # closes DB after operation
     try:
         cnx.close()
+        cursor.close()
         print("Database Closed")
     except mc.Error as err:
-        print("Something went wrong whuile closing DB: {}".format(err))
+        print("Something went wrong while closing DB: {}".format(err))
+
+# if __name__ == "__main__":
+#     cursor, cnx = getDbConnection()
+#     insertDb(cursor, cnx, ['qw.com','er.com','ty.com'])
+#     closeDb(cursor, cnx)
