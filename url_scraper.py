@@ -33,6 +33,8 @@ def getLinks(url):
     
     return links
 
+# TODO: Get list of sites not scraped and pass the getLinks function
+
 # if __name__ == "__main__":
 
 
