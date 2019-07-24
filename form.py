@@ -11,6 +11,11 @@ def website_list(url):
         url_list = url.split(',')
     else:
         url_list = list(url)
+    
+    # stripping white spaces
+    for url in url_list:
+        url.strip()
+
     return url_list
 
 @app.route('/')
