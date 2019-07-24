@@ -29,7 +29,7 @@ def getLinks(url):
     for url in soup.findAll('a', attrs={'href':re.compile("^http://")}):
         links.append(url.get('href'))
     
-    # TODO: insert links into DB
+    crux.insertScrapedUrl(links)
     
     return links
 

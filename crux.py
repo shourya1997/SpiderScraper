@@ -5,6 +5,10 @@ USERNAME = config.USERNAME
 PASS = config.PASSWORD
 DBNAME = config.DBNAME
 
+def insertScrapedUrl(url):
+    cursor, cnx = getDbConnection()
+    insertDb(cursor, cnx, url)
+
 def new_url_list(cursor, cnx, url):
     # creats a list of urls which dont exist in DB
     url_new = []
