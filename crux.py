@@ -27,7 +27,6 @@ def urlExist(cursor, cnx, url):
         cnx.rollback()
         print("Something went wrong in urlExist() in DB: {}".format(err))
 
-
 def getDbConnection():
     # connecting to DB
     try:
@@ -58,6 +57,22 @@ def insertDb(cursor, cnx, url):
         cnx.rollback()
         print("Something went wrong in inserting in DB: {}".format(err))
 
+def updateDb(url, update):
+    # Updates database
+    cursor, cnx = getDbConnection()
+    domain, boolean = update[0], update[1]
+
+    sql_update_query = 'UPDATE parsedUrls SET domain = %s, parsed = %s WHERE url = %s '
+    update_tuple = (domain, boolean, url)
+
+    try:
+        cursor.executemany(sql_update_query, update_tuple)
+        cnx.commit()
+        print("Update Successful")
+    except mc.Error as err:
+        cnx.rollback()
+        print("Something went wrong in Updating in DB: {}".format(err))
+
 def closeDb(cursor, cnx):
     # closes DB after operation
     try:
@@ -67,14 +82,14 @@ def closeDb(cursor, cnx):
     except mc.Error as err:
         print("Something went wrong while closing DB: {}".format(err))
 
-if __name__ == "__main__":
-    cursor, cnx = getDbConnection()
-    # insertDb(cursor, cnx, ['qw.com','er.com','ty.com'])
-    url_list = ['google.com','er.com','xyz.com']
-    # for url in url_list:
-    #     if urlExist(cursor, cnx, url):
-    #         print(url,"Not exists")
-    #     else:
-    #         print("Dosent Exist")
-    insertDb(cursor, cnx, url_list)
-    closeDb(cursor, cnx)
+# if __name__ == "__main__":
+#     cursor, cnx = getDbConnection()
+#     insertDb(cursor, cnx, ['qw.com','er.com','ty.com'])
+#     url_list = ['google.com','er.com','xyz.com']
+#     for url in url_list:
+#         if urlExist(cursor, cnx, url):
+#             print(url,"Not exists")
+#         else:
+#             print("Dosent Exist")
+#     insertDb(cursor, cnx, url_list)
+#     closeDb(cursor, cnx)
