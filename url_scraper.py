@@ -22,7 +22,7 @@ def getLinks(url):
     update = [domain, True]
     crux.updateDb(url, update)
 
-    html_page = requests.get(url)
+    html_page = requests.get(url).text
     soup = BeautifulSoup(html_page,'lxml')
     links = []
 
@@ -30,11 +30,27 @@ def getLinks(url):
         links.append(url.get('href'))
     
     crux.insertScrapedUrl(links)
-    
-    return links
 
-# TODO: Get list of sites not scraped and pass the getLinks function
+def getNotParsed():
+    '''
+    Gets list of URLS not scraped
+    '''
+    records = crux.urlNotParsed()
+    urls = []
+    for record in records:
+        urls.append(record[0])
+
+    return urls
+
+def parseLinks():
+    urls = getNotParsed()
+    for url in urls:
+        getLinks(url)
+
+
 
 # if __name__ == "__main__":
+#     print(getNotParsed())
+    
 
 

@@ -5,6 +5,20 @@ USERNAME = config.USERNAME
 PASS = config.PASSWORD
 DBNAME = config.DBNAME
 
+def urlNotParsed():
+    cursor, cnx = getDbConnection()
+    print("URL Passed to check if parsed or not")
+    sql_find_url = "SELECT * FROM parsedUrls WHERE parsed=False"    
+    try:
+        cursor.execute(sql_find_url)
+        record = cursor.fetchall()
+        return record
+    except mc.Error as err:
+        cnx.rollback()
+        print("Something went wrong in urlNotParsed() in DB: {}".format(err))
+    finally:
+        closeDb(cursor, cnx)
+
 def insertScrapedUrl(url):
     cursor, cnx = getDbConnection()
     insertDb(cursor, cnx, url)
@@ -30,6 +44,8 @@ def urlExist(cursor, cnx, url):
     except mc.Error as err:
         cnx.rollback()
         print("Something went wrong in urlExist() in DB: {}".format(err))
+    finally:
+        closeDb(cursor, cnx)
 
 def getDbConnection():
     # connecting to DB
@@ -60,22 +76,29 @@ def insertDb(cursor, cnx, url):
     except mc.Error as err:
         cnx.rollback()
         print("Something went wrong in inserting in DB: {}".format(err))
+    finally:
+        closeDb(cursor, cnx)
 
 def updateDb(url, update):
     # Updates database
     cursor, cnx = getDbConnection()
-    domain, boolean = update[0], update[1]
+    if urlExist(cursor, cnx, url):
+        domain, boolean = update[0], update[1]
 
-    sql_update_query = 'UPDATE parsedUrls SET domain = %s, parsed = %s WHERE url = %s '
-    update_tuple = (domain, boolean, url)
+        sql_update_query = 'UPDATE parsedUrls SET domain = %s, parsed = %s WHERE url = %s '
+        update_tuple = (domain, boolean, url)
 
-    try:
-        cursor.executemany(sql_update_query, update_tuple)
-        cnx.commit()
-        print("Update Successful")
-    except mc.Error as err:
-        cnx.rollback()
-        print("Something went wrong in Updating in DB: {}".format(err))
+        try:
+            cursor.execute(sql_update_query, update_tuple)
+            cnx.commit()
+            print("Update Successful")
+        except mc.Error as err:
+            cnx.rollback()
+            print("Something went wrong in Updating in DB: {}".format(err))
+        finally:
+            closeDb(cursor, cnx)
+    else:
+        print("URL dosn't exist in DB")
 
 def closeDb(cursor, cnx):
     # closes DB after operation
