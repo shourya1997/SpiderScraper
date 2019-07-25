@@ -6,6 +6,9 @@ PASS = config.PASSWORD
 DBNAME = config.DBNAME
 
 def urlNotParsed():
+    """
+    Gives list of URLs not parsed
+    """
     cursor, cnx = getDbConnection()
     print("URL Passed to check if parsed or not")
     sql_find_url = "SELECT * FROM parsedUrls WHERE parsed=False"    
@@ -16,12 +19,10 @@ def urlNotParsed():
     except mc.Error as err:
         cnx.rollback()
         print("Something went wrong in urlNotParsed() in DB: {}".format(err))
-    finally:
-        closeDb(cursor, cnx)
 
-def insertScrapedUrl(url):
+def insertScrapedUrl(url, baseUrl):
     cursor, cnx = getDbConnection()
-    insertDb(cursor, cnx, url)
+    insertDb(cursor, cnx, url, baseUrl)
 
 def new_url_list(cursor, cnx, url):
     # creats a list of urls which dont exist in DB
@@ -36,7 +37,7 @@ def new_url_list(cursor, cnx, url):
 def urlExist(cursor, cnx, url):
     # check if url exists in parsedUrl Table or not
     print("URL Passed to chech if exists or not")
-    sql_find_url = "SELECT * FROM parsedUrls WHERE url in (%s)"    
+    sql_find_url = "SELECT * FROM parsedUrls WHERE url = %s"    
     try:
         cursor.executemany(sql_find_url, (url,))
         record = cursor.fetchall()
@@ -44,8 +45,6 @@ def urlExist(cursor, cnx, url):
     except mc.Error as err:
         cnx.rollback()
         print("Something went wrong in urlExist() in DB: {}".format(err))
-    finally:
-        closeDb(cursor, cnx)
 
 def getDbConnection():
     # connecting to DB
@@ -62,12 +61,12 @@ def getDbConnection():
     except mc.Error as err:
         print("Something went wrong in Connecting to DB: {}".format(err))
 
-def insertDb(cursor, cnx, url):    
+def insertDb(cursor, cnx, url, baseUrl='DEFAULT'):    
     # insert into DB
     url_new = new_url_list(cursor, cnx, url)   
 
-    insert_tuple = [(x,) for x in url_new] # converting list to tuples
-    sql_insert_query = "INSERT INTO parsedUrls(url) VALUES (%s)"
+    insert_tuple = [(x,baseUrl) for x in url_new] # converting list to tuples
+    sql_insert_query = "INSERT INTO parsedUrls(url, parsedfrom) VALUES (%s,%s)"
 
     try:
         cursor.executemany(sql_insert_query, insert_tuple)
@@ -95,8 +94,8 @@ def updateDb(url, update):
         except mc.Error as err:
             cnx.rollback()
             print("Something went wrong in Updating in DB: {}".format(err))
-        finally:
-            closeDb(cursor, cnx)
+        # finally:
+        #     closeDb(cursor, cnx)
     else:
         print("URL dosn't exist in DB")
 

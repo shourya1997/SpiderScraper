@@ -20,18 +20,18 @@ def getLinks(url):
     # Update `domain = url.com` 
     domain = getDomain(url)
     update = [domain, True]
-    crux.updateDb(url, update)
+    # crux.updateDb(url, update)
 
     html_page = requests.get(url).text
     soup = BeautifulSoup(html_page,'lxml')
     links = []
 
-    for url in soup.findAll('a', attrs={'href':re.compile("^http://")}):
-        links.append(url.get('href'))
+    for link in soup.findAll('a', attrs={'href':re.compile("^http://")}):
+        links.append(link.get('href'))
     
-    crux.insertScrapedUrl(links)
+    crux.insertScrapedUrl(links,url)
 
-    getNotParsed()
+    # getNotParsed()
 
 def getNotParsed():
     '''
@@ -52,8 +52,8 @@ def parseLinks(urls):
 
 
 
-# if __name__ == "__main__":
-#     print(getNotParsed())
+if __name__ == "__main__":
+    print(getLinks('https://myoperator.co/'))
     
 
 
