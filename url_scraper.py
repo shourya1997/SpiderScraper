@@ -31,6 +31,8 @@ def getLinks(url):
     
     crux.insertScrapedUrl(links)
 
+    getNotParsed()
+
 def getNotParsed():
     '''
     Gets list of URLS not scraped
@@ -39,11 +41,12 @@ def getNotParsed():
     urls = []
     for record in records:
         urls.append(record[0])
+    
+    parseLinks(urls)
 
     return urls
 
-def parseLinks():
-    urls = getNotParsed()
+def parseLinks(urls):
     for url in urls:
         getLinks(url)
 
