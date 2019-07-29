@@ -17,7 +17,7 @@ def getLinks(url, domain):
     soup = BeautifulSoup(html_page,'lxml')
     links = []
 
-    for link in soup.findAll('a', attrs={'href':re.compile("^http://")}):
+    for link in soup.findAll('a', attrs={'href':re.compile("^https://|^http://")}):
         href = link.get('href')
         if href.find(domain) != -1:
             links.append(link.get('href'))

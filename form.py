@@ -45,7 +45,7 @@ def formhandler():
         message = 'Website URL Submitted: ' + website_urls
         url_list = website_list(website_urls)
         domain = getDomain(website_urls)
-        insertDb(cursor, cnx, website_urls, domain)
+        insertDb(cursor, cnx, url_list, domain)
         us.getLinks(website_urls, domain)
         
     return template(FORM_TEMPLATE, message=message)
