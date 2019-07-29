@@ -1,9 +1,19 @@
 from bottle import Bottle, template, request
 from crux import getDbConnection, insertDb, closeDb
+import url_scraper as us
+from urllib.parse import urlparse
 import os
+
 
 FORM_TEMPLATE = 'form.tpl'
 app = Bottle()
+
+def getDomain(url):
+    '''
+    Extracts Domain from the `url`
+    '''
+    domain = urlparse(url).hostname
+    return domain
 
 def website_list(url):
     # converting url to list
@@ -32,10 +42,11 @@ def formhandler():
     if website_urls is "":
         main()
     else:
-        message = 'Website URL(s) Submitted: ' + website_urls
+        message = 'Website URL Submitted: ' + website_urls
         url_list = website_list(website_urls)
-        # entering list of urls in db
-        insertDb(cursor, cnx, url_list)
+        domain = getDomain(website_urls)
+        insertDb(cursor, cnx, website_urls, domain)
+        us.getLinks(website_urls, domain)
         
     return template(FORM_TEMPLATE, message=message)
 
