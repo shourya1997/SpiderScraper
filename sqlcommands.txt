@@ -1,0 +1,10 @@
+Create a realtime dashboard which will show following things
+◦ Total number of URL's parsed
+◦ Total number of Queued URL's (URL's stored but not yet
+parsed)
+
+◦ Data table showing list of latest URL's parsed
+- select url from parsedUrls where parsed = 1 order by url desc limit 5;
+
+◦ A graph showing number of URL's parsed per minute
+

@@ -30,7 +30,7 @@ def urlNotParsed():
     sql_find_url = "SELECT * FROM parsedUrls WHERE parsed=False"    
     try:
         cursor.execute(sql_find_url)
-        record = cursor.fetchall()
+        record = cursor.fetchone()
         return record
     except mc.Error as err:
         cnx.rollback()
